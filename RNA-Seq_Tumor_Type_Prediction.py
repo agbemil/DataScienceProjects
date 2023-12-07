@@ -173,8 +173,18 @@ downsampled_data['Class'] = downsampled_labels
 # To get the downsampled data without the labels
 downsampled_data_without_labels = downsampled_data.drop(columns=['Class'])
 
-## Model Evaluation Function
+# Plot the distribution of the classes in the downsampled dataset.
+class_counts = downsampled_labels.value_counts()
+colors = plt.cm.rainbow(np.linspace(0, 1, len(class_counts)))
 
+plt.bar(class_counts.index, class_counts.values, color=colors)
+plt.xlabel('Cancer Types')
+plt.ylabel('Number of Samples')
+plt.title('Distribution of Classes after Downsampling')
+plt.grid(False)
+plt.show()
+
+## Model Evaluation Function
 def evaluate_model(model, X, y, is_onehot):
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
