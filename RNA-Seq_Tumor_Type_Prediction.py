@@ -35,14 +35,9 @@ import matplotlib.cm as cm
 #import seaborn as sns
 #from sklearn.utils import resample
 
-
-
 # # Data Loading
-
 data = pd.read_csv(r"D:/Third Year/Data Science 1/Datasets/data.csv")
 labels = pd.read_csv(r"D:/Third Year/Data Science 1/Datasets/labels.csv")
-
-
 # # Merging data with labels
 data['Class'] = labels['Class']
 
@@ -50,9 +45,7 @@ data['Class'] = labels['Class']
 X = data.drop(columns=['Class'])
 y = data['Class']
 
-
 ###### Data Cleaning
-
 # Preliminary Analysis
 print(data.head())
 
@@ -65,10 +58,7 @@ data = data.dropna()
 # Check for duplicates
 data = data.drop_duplicates()
 
-
-
 ####### Distribution of Tumor Types
-
 # Descriptive Statistics
 print(data.describe())
 
@@ -90,7 +80,6 @@ plt.title('Distribution of Tumor Types')
 # Show the plot
 plt.show()
 
-
 ########### Distribution of Gene Expressions
 
 selected_genes = ['gene_1', 'gene_2', 'gene_3','gene_4']  # replace with some actual gene names
@@ -104,7 +93,6 @@ for i, gene in enumerate(selected_genes):
 
 plt.tight_layout()
 plt.show()
-
 
 ############### Correlation Analysis
 # Selecting a random subset of genes for correlation analysis
@@ -122,13 +110,10 @@ plt.xlabel('Sampled Genes')
 plt.ylabel('Sampled Genes')
 plt.show()
 
-
-
 ##### Checking if the dataset has some linearlity using  PCA vs Kernel PCA
 # Standardize the data
 scaler = StandardScaler()
 X_scale = scaler.fit_transform(X)
-
 
 # Assume X_scaled is your scaled feature matrix and y is the categorical class labels from your data
 # Apply PCA
@@ -161,8 +146,6 @@ plt.legend()
 plt.tight_layout()
 plt.show()
 
-
-
 ######## Downsampling the Data to balance the clases 
 
 # Separate the dataset into a dictionary with keys as class labels and values as the subset dataframes
@@ -190,7 +173,6 @@ downsampled_data['Class'] = downsampled_labels
 # To get the downsampled data without the labels
 downsampled_data_without_labels = downsampled_data.drop(columns=['Class'])
 
-
 ## Model Evaluation Function
 
 def evaluate_model(model, X, y, is_onehot):
@@ -211,24 +193,19 @@ def evaluate_model(model, X, y, is_onehot):
 
     return precision, recall, f1, accuracy, test_error
 
-
-
 ###### Tree-based feature Selection (Random Forest)
 
 # Standardize the data
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(downsampled_data_without_labels)
 
-
 # One-hot encode the target variable
 onehot_encoder = OneHotEncoder(sparse=False)
 y_onehot = onehot_encoder.fit_transform(downsampled_labels.values.reshape(-1, 1))
 
-
 # Encode the target variable
 label_encoder = LabelEncoder()
 y_encoded = label_encoder.fit_transform(downsampled_labels)
-
 
 # Train a Random Forest Classifier
 rf = RandomForestClassifier(n_estimators=100, random_state=42)
@@ -242,7 +219,6 @@ selected_features = downsampled_data_without_labels.columns[importances > thresh
 
 X_tree_selected = downsampled_data_without_labels[selected_features]
 print(X_tree_selected)
-
 
 ######## Feature importance from Random Forest
 
@@ -273,8 +249,6 @@ plt.ylabel('Feature Names')
 plt.tight_layout()  # Fit the plot within the figure neatly
 plt.show()
 
-
-
 ## Cluster heatmap for top 20 
 
 # Assuming 'importances' contains importances for all features and 'X' is the original features DataFrame
@@ -288,7 +262,6 @@ top_features = top_features_df['Feature'].values
 # Subset your data to include only the top 20 features
 X_top_features = X[top_features]
 
-
 # Perform clustering
 row_clusters = linkage(X_top_features.transpose(), method='ward', metric='euclidean')
 col_clusters = linkage(X_top_features.T, method='ward', metric='euclidean')
@@ -300,7 +273,6 @@ sns.clustermap(X_top_features.transpose(), row_linkage=row_clusters, col_linkage
 # Show the plot
 plt.show()
 
-
 # # Model Evaluation for Selected Features (Tree based)
 
 # Tree-based models with one-hot encoded target
@@ -309,7 +281,6 @@ tree_based_models = {
     "Decision Tree": DecisionTreeClassifier(),
     "XGBoost": XGBClassifier()
 }
-
 
 # Other models with label-encoded target
 other_models = {
@@ -322,7 +293,6 @@ other_models = {
 
 # Initialize a DataFrame to store all metrics
 all_metrics_df = pd.DataFrame(columns=["Model", "Precision", "Recall", "F1_Score", "Accuracy", "Test_Error"])
-
 
 # List to store each model's metrics
 all_metrics_list = []
@@ -345,8 +315,7 @@ for name, model in other_models.items():
 
 # Convert list of dicts to DataFrame
 all_metrics_df = pd.DataFrame(all_metrics_list)
-     
-    
+         
 # Set the aesthetics for the plots
 sns.set(style="whitegrid")
 
@@ -355,7 +324,6 @@ all_metrics_long = pd.melt(all_metrics_df, id_vars=["Model"], var_name="Metric",
 
 # Format the values in the DataFrame to six decimal places
 all_metrics_df.update(all_metrics_df.select_dtypes(include=['float']).applymap('{:.6f}'.format))
-
 
 # Create the figure and axes
 fig = plt.figure(figsize=(12, 10))  # Adjust the size as needed to give more space
@@ -405,11 +373,7 @@ plt.savefig('RF_combined_plot_and_table.png', bbox_inches='tight')  # Use bbox_i
 # Show the figure
 plt.show()
 
-
-
-
 # # Column and Row-wise clusterings in heatmap¶
-
 
 # Calculate the linkage for rows and columns
 row_clusters = linkage(X_tree_selected, method='ward', metric='euclidean')
@@ -424,7 +388,6 @@ sns.clustermap(X_tree_selected,
 
 # Display the heatmap
 plt.show()
-
 
 # # Genes Interation
 X_tree_select = downsampled_data_without_labels[selected_features]
@@ -485,7 +448,6 @@ plt.title('Gene Interaction Network with Community Detection')
 plt.axis('off')  # Turn off the axis
 plt.show()
 
-
 ##Extracting genes in each community
 
 # Create a dictionary to store genes in each community
@@ -500,11 +462,8 @@ for community_id, genes in genes_in_communities.items():
     print(f"Community {community_id}: {', '.join(genes)}")
 
 
-
-
 ###########################
 #Test for the Communities
-
 
 # Step 2: Compute the Original Community Structure
 correlation_matrix = pd.DataFrame(X_tree_selected).corr()
