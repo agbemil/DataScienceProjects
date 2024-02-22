@@ -455,15 +455,3 @@ ari_value10 <- adjustedRandIndex(label_v, model_labelu)
 
 
 
-ari_value1
-ari_value2
-ari_value3
-ari_value4
-ari_value5
-ari_value7
-ari_value8
-ari_value9
-ari_value10
-
-
-
